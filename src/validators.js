@@ -20,8 +20,12 @@ export function validateActivities(activities) {
   return activities.every(isActivityValid)
 }
 
-export function isActivityValid(activity) {
-  return isNotEmptyString(activity)
+export function isActivityValid({ id, name, secondsToComplete }) {
+  if (isNull(id)) {
+    return true
+  }
+
+  return [isNotEmptyString(id), isNotEmptyString(name), isNumber(secondsToComplete)].every(Boolean)
 }
 
 function isNotEmptyString(value) {
@@ -40,30 +44,34 @@ export function isUndefinedOrNull(value) {
   return isUndefined(value) || isNull(value)
 }
 
+export function isSelectValueValid(value) {
+  return isNotEmptyString(value) || isNumberOrNull(value)
+}
+
 export function isNumberOrNull(value) {
   return isNumber(value) || isNull(value)
+}
+
+export function isNull(value) {
+  return value === null
 }
 
 export function isUndefined(value) {
   return value === undefined
 }
 
+export function isNumber(value) {
+  return typeof value === 'number'
+}
+
 function isSelectOptionValid({ value, label }) {
-  return isNumber(value) && isNotEmptyString(label)
+  return (isNumber(value) || isNotEmptyString(value)) && isNotEmptyString(label)
 }
 
 function isBetween(value, start, end) {
   return value >= start && value <= end
 }
 
-function isNumber(value) {
-  return typeof value === 'number'
-}
-
 function isString(value) {
   return typeof value === 'string'
-}
-
-function isNull(value) {
-  return value === null
 }

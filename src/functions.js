@@ -1,5 +1,21 @@
-import { PAGE_TIMELINE, HOURS_IN_DAY, MIDNIGHT_HOUR } from './constants'
-import { isPageValid } from './validators'
+import {
+  SECONDS_IN_HOUR,
+  SECONDS_IN_MINUTE,
+  MINUTES_IN_HOUR,
+  PAGE_TIMELINE,
+  HOURS_IN_DAY,
+  MILLISECONDS_IN_SECOND
+} from './constants'
+import { isPageValid, isNull } from './validators'
+
+export function formatSeconds(seconds) {
+  const date = new Date()
+
+  date.setTime(Math.abs(seconds) * MILLISECONDS_IN_SECOND)
+  const utc = date.toUTCString()
+
+  return utc.substring(utc.indexOf(':') - 2, utc.indexOf(':') + 6)
+}
 
 export function normalizePageHash() {
   const page = window.location.hash.slice(1)
@@ -13,17 +29,70 @@ export function normalizePageHash() {
   return PAGE_TIMELINE
 }
 
-export function generateTimelineItems() {
-  const timelineItems = []
+export function normalizeSelectValue(value) {
+  return isNull(value) || isNaN(value) ? value : +value
+}
 
-  for (let hour = MIDNIGHT_HOUR; hour < HOURS_IN_DAY; hour++) {
-    timelineItems.push({ hour })
-  }
+export function generateActivities() {
+  ['Coding', 'Reading', 'Training'].map((name, hours) => ({
+    id: id(),
+    name,
+    secondsToComplete: hours * SECONDS_IN_HOUR
+  }))
 
+  return [
+    {
+      id: id(),
+      name: 'Coding',
+      secondsToComplete: 0 * SECONDS_IN_HOUR
+    },
+    {
+      id: id(),
+      name: 'Training',
+      secondsToComplete: 1 * SECONDS_IN_HOUR
+    },
+    {
+      id: id(),
+      name: 'Reading',
+      secondsToComplete: 2 * SECONDS_IN_HOUR
+    }
+  ]
+}
+
+export function id() {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2)
+}
+
+export function getTotalActivitySeconds(activity, timelineItems) {
   return timelineItems
+    .filter((timelineItem) => timelineItem.activityId === activity.id)
+    .reduce((totalSeconds, timelineItem) => Math.round(timelineItem.activitySeconds + totalSeconds), 0)
+}
+
+export function generateTimelineItems(activities) {
+  return [...Array(HOURS_IN_DAY).keys()].map((hour) => ({
+    hour,
+    // activityId: hour % 4 === 0 ? null : activities[hour % 2].id,
+    // activitySeconds: hour % 4 === 0 ? 0 : (15 * SECONDS_IN_MINUTE * hour) % SECONDS_IN_HOUR,
+    activityId: hour % 4 === 0 ? null : activities[hour % 2].id,
+    activitySeconds: hour % 4 === 0 ? 0 : (15 * SECONDS_IN_MINUTE * hour) % SECONDS_IN_HOUR,
+  }))
 }
 
 export function generateActivitySelectOptions(activities) {
-  console.log(activities)
-  return activities.map((label, value) => ({ label, value }))
+  return activities.map((activity) => ({ value: activity.id, label: activity.name }))
+}
+
+export function generatePeriodSelectOptions(periodsInMinutes) {
+  return periodsInMinutes.map((periodInMinutes) => ({
+    value: periodInMinutes * SECONDS_IN_MINUTE,
+    label: generatePeriodSelectOptionsLabel(periodInMinutes)
+  }))
+}
+
+function generatePeriodSelectOptionsLabel(periodInMinutes) {
+  const hours = Math.floor(periodInMinutes / MINUTES_IN_HOUR).toString().padStart(2, 0)
+  const minutes = (periodInMinutes % MINUTES_IN_HOUR).toString().padStart(2, 0)
+
+  return `${hours}:${minutes}`
 }
