@@ -4,6 +4,10 @@ export function isPageValid(page) {
   return Object.keys(NAV_ITEMS).includes(page)
 }
 
+export function isNavItemValid(navItem) {
+  return NAV_ITEMS.includes(navItem)
+}
+
 export function isButtonTypeValid(type) {
   return BUTTON_TYPES.includes(type)
 }

@@ -1,62 +1,37 @@
 <script setup>
-import { NULLABLE_ACTIVITY } from '../constants'
-import {
-  isTimelineItemValid,
-  isActivityValid,
-  isHourValid,
-  validateSelectOptions,
-  validateActivities,
-  isNumber
-} from '../validators'
+import { inject } from 'vue'
+import { isTimelineItemValid, isUndefined } from '../validators'
+import { setTimelineItemActivityKey, activitySelectOptionsKey } from '../keys'
 import BaseSelect from './BaseSelect.vue'
 import TimelineHour from './TimelineHour.vue'
 import TimelineStopwatch from './TimelineStopwatch.vue'
 
-const props = defineProps({
+defineProps({
   timelineItem: {
     required: true,
     type: Object,
     validator: isTimelineItemValid
-  },
-  activities: {
-    required: true,
-    type: Array,
-    validator: validateActivities
-  },
-  activitySelectOptions: {
-    required: true,
-    type: Array,
-    validator: validateSelectOptions
   }
 })
 
 const emit = defineEmits({
-  selectActivity: isActivityValid,
-  scrollToHour: isHourValid
+  scrollToHour: isUndefined
 })
 
-function selectActivity(id) {
-  emit('selectActivity', findActivityById(id))
-}
-
-function findActivityById(id) {
-  return props.activities.find((activity) => activity.id === id) || NULLABLE_ACTIVITY
-}
+const setTimelineItemActivity = inject(setTimelineItemActivityKey)
+const activitySelectOptions = inject(activitySelectOptionsKey)
 </script>
 
 <template>
   <li class="relative flex flex-col gap-2 border-t border-gray-200 px-4 py-10">
-    <TimelineHour
-      :hour="timelineItem.hour"
-      @click.prevent="emit('scrollToHour', timelineItem.hour)"
-    />
+    <TimelineHour :hour="timelineItem.hour" @click.prevent="emit('scrollToHour')" />
     <BaseSelect
       :selected="timelineItem.activityId"
       :options="activitySelectOptions"
       placeholder="Rest"
-      @select="selectActivity"
+      @select="setTimelineItemActivity(timelineItem, $event)"
     />
-    <TimelineStopwatch :timeline-item="timelineItem" :hour="timelineItem.hour" />
+    <TimelineStopwatch :timeline-item="timelineItem" />
   </li>
 </template>
 

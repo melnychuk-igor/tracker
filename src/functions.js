@@ -2,11 +2,13 @@ import {
   SECONDS_IN_HOUR,
   SECONDS_IN_MINUTE,
   MINUTES_IN_HOUR,
-  PAGE_TIMELINE,
-  HOURS_IN_DAY,
   MILLISECONDS_IN_SECOND
 } from './constants'
-import { isPageValid, isNull } from './validators'
+import { isNull } from './validators'
+
+export function currentHour() {
+  return new Date().getHours()
+}
 
 export function formatSeconds(seconds) {
   const date = new Date()
@@ -15,18 +17,6 @@ export function formatSeconds(seconds) {
   const utc = date.toUTCString()
 
   return utc.substring(utc.indexOf(':') - 2, utc.indexOf(':') + 6)
-}
-
-export function normalizePageHash() {
-  const page = window.location.hash.slice(1)
-
-  if (isPageValid(page)) {
-    return page
-  }
-
-  window.location.hash = PAGE_TIMELINE
-
-  return PAGE_TIMELINE
 }
 
 export function normalizeSelectValue(value) {
@@ -69,21 +59,16 @@ export function getTotalActivitySeconds(activity, timelineItems) {
     .reduce((totalSeconds, timelineItem) => Math.round(timelineItem.activitySeconds + totalSeconds), 0)
 }
 
-export function generateTimelineItems(activities) {
-  return [...Array(HOURS_IN_DAY).keys()].map((hour) => ({
-    hour,
-    // activityId: hour % 4 === 0 ? null : activities[hour % 2].id,
-    // activitySeconds: hour % 4 === 0 ? 0 : (15 * SECONDS_IN_MINUTE * hour) % SECONDS_IN_HOUR,
-    activityId: hour % 4 === 0 ? null : activities[hour % 2].id,
-    activitySeconds: hour % 4 === 0 ? 0 : (15 * SECONDS_IN_MINUTE * hour) % SECONDS_IN_HOUR,
-  }))
-}
-
 export function generateActivitySelectOptions(activities) {
   return activities.map((activity) => ({ value: activity.id, label: activity.name }))
 }
 
-export function generatePeriodSelectOptions(periodsInMinutes) {
+export function generatePeriodSelectOptions() {
+  const periodsInMinutes = [
+    15, 30, 45, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420, 450, 480
+  ]
+
+
   return periodsInMinutes.map((periodInMinutes) => ({
     value: periodInMinutes * SECONDS_IN_MINUTE,
     label: generatePeriodSelectOptionsLabel(periodInMinutes)
