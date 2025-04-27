@@ -1,14 +1,15 @@
 <script setup>
-import { inject } from 'vue'
-import { TrashIcon } from '@heroicons/vue/24/outline'
-import { BUTTON_TYPE_DANGER } from '../constants'
+import { BUTTON_TYPE_DANGER, PERIOD_SELECT_OPTIONS } from '../constants'
+import { ICON_TRASH } from '../icons'
 import { isActivityValid } from '../validators'
-import { setActivitySecondsToCompleteKey, periodSelectOptionsKey, deleteActivityKey } from '../keys'
+import { updateActivity, deleteActivity } from '../activities'
+import { timelineItems, resetTimelineItemActivities } from '../timeline-items'
 import BaseButton from './BaseButton.vue'
+import BaseIcon from './BaseIcon.vue'
 import BaseSelect from './BaseSelect.vue'
-import ActivitySecondsToComplete from './ActivitySecondsToComplete.vue'
+import RemainingActivitySeconds from './RemainingActivitySeconds.vue'
 
-const props = defineProps({
+defineProps({
   activity: {
     required: true,
     type: Object,
@@ -16,16 +17,17 @@ const props = defineProps({
   }
 })
 
-const setActivitySecondsToComplete = inject(setActivitySecondsToCompleteKey)
-const periodSelectOptions = inject(periodSelectOptionsKey)
-const deleteActivity = inject(deleteActivityKey)
+function deleteAndResetActivity(activity) {
+  resetTimelineItemActivities(timelineItems.value, activity)
+  deleteActivity(activity)
+}
 </script>
 
 <template>
   <li class="flex flex-col gap-2 p-4">
     <div class="flex items-center gap-2">
-      <BaseButton :type="BUTTON_TYPE_DANGER" @click="deleteActivity(activity)">
-        <TrashIcon class="h-8" />
+      <BaseButton :type="BUTTON_TYPE_DANGER" @click="deleteAndResetActivity(activity)">
+        <BaseIcon :name="ICON_TRASH" />
       </BaseButton>
       <span class="truncate text-xl">{{ activity.name }}</span>
     </div>
@@ -33,13 +35,11 @@ const deleteActivity = inject(deleteActivityKey)
       <BaseSelect
         class="grow font-mono"
         placeholder="hh:mm"
-        :options="periodSelectOptions"
+        :options="PERIOD_SELECT_OPTIONS"
         :selected="activity.secondsToComplete || null"
-        @select="setActivitySecondsToComplete(activity, $event)"
+        @select="updateActivity(activity, { secondsToComplete: $event || 0 })"
       />
-      <ActivitySecondsToComplete v-if="activity.secondsToComplete" :activity="activity" />
+      <RemainingActivitySeconds v-if="activity.secondsToComplete" :activity="activity" />
     </div>
   </li>
 </template>
-
-<style lang=""></style>

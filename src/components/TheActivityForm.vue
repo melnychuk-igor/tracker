@@ -1,9 +1,10 @@
 <script setup>
-import { ref, nextTick, inject } from 'vue'
-import { PlusIcon } from '@heroicons/vue/24/outline'
+import { ref, nextTick } from 'vue'
+import { ICON_PLUS } from '../icons'
 import { id } from '../functions'
-import { createActivityKey } from '../keys'
+import { createActivity } from '../activities'
 import BaseButton from './BaseButton.vue'
+import BaseIcon from './BaseIcon.vue'
 
 const name = ref('')
 
@@ -19,8 +20,6 @@ async function submit() {
 
   window.scrollTo(0, document.body.scrollHeight)
 }
-
-const createActivity = inject(createActivityKey)
 </script>
 
 <template>
@@ -32,7 +31,7 @@ const createActivity = inject(createActivityKey)
       v-model="name"
     />
     <BaseButton :disabled="name.trim() === ''">
-      <PlusIcon class="h-8" />
+      <BaseIcon :name="ICON_PLUS" />
     </BaseButton>
   </form>
 </template>
