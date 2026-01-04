@@ -7,7 +7,7 @@ import TheActivitiesEmptyState from '../components/TheActivitiesEmptyState.vue'
 
 <template>
   <div class="flex grow flex-col">
-    <ul v-if="activities.length > 0" class="grow divide-y">
+    <ul v-if="activities.length" class="grow divide-y">
       <ActivityItem v-for="activity in activities" :key="activity.id" :activity="activity" />
     </ul>
     <TheActivitiesEmptyState v-else />

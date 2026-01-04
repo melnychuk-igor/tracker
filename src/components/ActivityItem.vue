@@ -1,23 +1,16 @@
-<script setup>
-import { BUTTON_TYPE_DANGER, PERIOD_SELECT_OPTIONS } from '../constants'
-import { ICON_TRASH } from '../icons'
-import { isActivityValid } from '../validators'
-import { updateActivity, deleteActivity } from '../activities'
-import { timelineItems, resetTimelineItemActivities } from '../timeline-items'
+<script setup lang="ts">
+import { PERIOD_SELECT_OPTIONS } from '../constants'
+import { deleteActivity, updateActivity } from '../activities'
+import { resetTimelineItemActivities, timelineItems } from '../timeline-items'
 import BaseButton from './BaseButton.vue'
 import BaseIcon from './BaseIcon.vue'
 import BaseSelect from './BaseSelect.vue'
 import RemainingActivitySeconds from './RemainingActivitySeconds.vue'
+import { ButtonType, IconName, type Activity } from '../types'
 
-defineProps({
-  activity: {
-    required: true,
-    type: Object,
-    validator: isActivityValid
-  }
-})
+defineProps<{ activity: Activity }>()
 
-function deleteAndResetActivity(activity) {
+function deleteAndResetActivity(activity: Activity): void {
   resetTimelineItemActivities(timelineItems.value, activity)
   deleteActivity(activity)
 }
@@ -26,8 +19,8 @@ function deleteAndResetActivity(activity) {
 <template>
   <li class="flex flex-col gap-2 p-4">
     <div class="flex items-center gap-2">
-      <BaseButton :type="BUTTON_TYPE_DANGER" @click="deleteAndResetActivity(activity)">
-        <BaseIcon :name="ICON_TRASH" />
+      <BaseButton :type="ButtonType.DANGER" @click="deleteAndResetActivity(activity)">
+        <BaseIcon :name="IconName.TRASH" />
       </BaseButton>
       <span class="truncate text-xl">{{ activity.name }}</span>
     </div>
