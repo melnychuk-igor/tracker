@@ -13,7 +13,7 @@ function handleClick(): void {
   <a
     :href="`#${PageName.TIMELINE}`"
     @click="handleClick"
-    class="origin-left scale-125 rounded bg-black p-1 text-white"
+    class="text-pink block origin-left scale-125 rounded bg-black p-1 text-white"
   >
     <BaseIcon :name="IconName.CLOCK" class="h-5" />
   </a>

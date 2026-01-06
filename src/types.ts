@@ -1,7 +1,8 @@
 export enum PageName {
   TIMELINE = 'timeline',
   ACTIVITIES = 'activities',
-  PROGRESS = 'progress'
+  PROGRESS = 'progress',
+  CONTACT = 'contact'
 }
 
 export enum ButtonType {
@@ -48,7 +49,8 @@ export enum IconName {
   X_MARK = 'XMark',
   PAUSE = 'Pause',
   PLAY = 'Play',
-  PLUS = 'Plus'
+  PLUS = 'Plus',
+  CHAT = 'Chat'
 }
 
 export interface TimelineItem {
